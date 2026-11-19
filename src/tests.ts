@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import type { Service } from './domain/services.js';
 import { customerSchema } from './domain/customer-validation.js';
 import { requestSchema } from './domain/request-validation.js';
+import { openDatabase } from './db/sqlite.js';
 
 
 test('Test invalid service', () => {
@@ -152,4 +153,14 @@ test("Test requestSchema with invalid time format", () => {
   assert.throws(() => {
     requestSchema.parse(invalidRequest);
   });
+});
+
+test("Opens database connection and SELECT 1 AS answer", () => {
+  const db = openDatabase(':memory:');
+  try {
+    const row = db.prepare('SELECT 1 AS answer').get() as { answer: number };
+    assert.equal(row.answer, 1);  
+  } finally {
+    db.close();
+  }
 });
