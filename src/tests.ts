@@ -47,3 +47,24 @@ test("Test Customer schema without email", () => {
     customerSchema.parse(invalidCustomer);
   });
 });
+
+test("Test Customer Schema with empty name", () => {
+  const invalidCustomer = {
+    name: "",
+    email: "test@email.com",
+    phone: "123-456-7890"
+  };  
+  assert.throws(() => {
+    customerSchema.parse(invalidCustomer);
+  });
+});
+test("Test Customer Schema with empty phone", () => { 
+  const invalidCustomer = {
+    name: "John Doe",
+    email: "test@email.com",
+    phone: ""
+  };  
+  assert.throws(() => {
+    customerSchema.parse(invalidCustomer);
+  });
+});
