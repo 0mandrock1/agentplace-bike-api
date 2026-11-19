@@ -158,8 +158,8 @@ test("Test requestSchema with invalid time format", () => {
 test("Opens database connection and SELECT 1 AS answer", () => {
   const db = openDatabase(':memory:');
   try {
-    const row = db.prepare('SELECT 1 AS answer').get() as { answer: number };
-    assert.equal(row.answer, 1);  
+    const row = db.prepare('SELECT 1 AS answer').get();
+    assert.deepEqual(row, { answer: 1 });
   } finally {
     db.close();
   }
