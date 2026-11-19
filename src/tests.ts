@@ -80,7 +80,8 @@ test("Test requestSchema with valid data", () => {
       email: "test@email.com",
       phone: "123-456-7890"
     },
-    idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb"
+    idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb",
+    preferred_at: "2026-12-01T14:00:00+02:00"
   };
   assert.doesNotThrow(() => {
     requestSchema.parse(validRequest);
@@ -96,7 +97,8 @@ test("Test requestSchema with invalid test value", () => {
       email: "test@email.com",
       phone: "123-456-7890"
     }, 
-    idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb"
+    idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb",
+    preferred_at: "2026-12-01T14:00:00+02:00"
   };
   assert.throws(() => {
     requestSchema.parse(invalidRequest);
@@ -112,7 +114,40 @@ test("Test requestSchema with invalid uuid value", () => {
       email: "test@email.com",
       phone: "123-456-7890"
     },
-    idempotency_key: "invalid-uuid"
+    idempotency_key: "invalid-uuid",
+    preferred_at: "2026-12-01T14:00:00+02:00"
+  };
+  assert.throws(() => {
+    requestSchema.parse(invalidRequest);
+  });
+});
+test("Test requestSchema with invalid time value", () => {
+  const invalidRequest = {
+    test: true,
+    service: "diagnostics",
+    customer: {
+      name: "John Doe",
+      email: "test@email.com",
+      phone: "123-456-7890"
+    },  
+  idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb",
+    preferred_at: "invalid-time"
+  };
+  assert.throws(() => {
+    requestSchema.parse(invalidRequest);
+  });
+});
+test("Test requestSchema with invalid time format", () => {
+  const invalidRequest = {
+    test: true,
+    service: "diagnostics",
+    customer: {
+      name: "John Doe",
+      email: "test@email.com",
+      phone: "123-456-7890"
+    },  
+  idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb",
+    preferred_at: "2026-12-01T14:00:00"
   };
   assert.throws(() => {
     requestSchema.parse(invalidRequest);

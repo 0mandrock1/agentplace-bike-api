@@ -6,6 +6,7 @@ export const requestSchema = z.object({
     service: servicesSchema,
     customer: customerSchema,
     idempotency_key: z.uuid(),
+    preferred_at: z.iso.datetime({ offset: true }),
 });
 
 export type Request = z.infer<typeof requestSchema>;
