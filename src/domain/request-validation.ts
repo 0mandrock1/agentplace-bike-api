@@ -6,3 +6,5 @@ export const requestSchema = z.object({
     service: servicesSchema,
     customer: customerSchema,
 });
+
+export type Request = z.infer<typeof requestSchema>;
