@@ -11,7 +11,7 @@ fastify.get('/health', function(request, reply) {
 
 
 fastify.get(('/v1/services'),function(request,reply) {
-    reply.send(JSON.stringify(SERVICES))
+    reply.send(SERVICES)
 })
 
 fastify.listen({ port: 3000}, function(err,address){
