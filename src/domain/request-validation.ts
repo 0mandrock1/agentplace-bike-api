@@ -5,6 +5,7 @@ export const requestSchema = z.object({
     test: z.literal(true),
     service: servicesSchema,
     customer: customerSchema,
+    idempotency_key: z.uuid(),
 });
 
 export type Request = z.infer<typeof requestSchema>;

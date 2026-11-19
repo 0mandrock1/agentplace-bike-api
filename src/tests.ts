@@ -79,7 +79,8 @@ test("Test requestSchema with valid data", () => {
       name: "John Doe",
       email: "test@email.com",
       phone: "123-456-7890"
-    }
+    },
+    idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb"
   };
   assert.doesNotThrow(() => {
     requestSchema.parse(validRequest);
@@ -94,7 +95,24 @@ test("Test requestSchema with invalid test value", () => {
       name: "John Doe",
       email: "test@email.com",
       phone: "123-456-7890"
-    }
+    }, 
+    idempotency_key: "1a1502ac-e045-4e8a-b900-4686b050a1cb"
+  };
+  assert.throws(() => {
+    requestSchema.parse(invalidRequest);
+  });
+});
+
+test("Test requestSchema with invalid uuid value", () => {
+  const invalidRequest = {
+    test: true,
+    service: "diagnostics",
+    customer: {
+      name: "John Doe",
+      email: "test@email.com",
+      phone: "123-456-7890"
+    },
+    idempotency_key: "invalid-uuid"
   };
   assert.throws(() => {
     requestSchema.parse(invalidRequest);
