@@ -76,3 +76,4 @@ test-reports
 #     ides/visual-studio-code.gitignore | sort -u > .gitignore
 node_modules/
 deploy.ps1
+.vscode/launch.json
