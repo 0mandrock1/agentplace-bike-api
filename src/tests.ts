@@ -12,9 +12,8 @@ test('Test invalid service', () => {
 test("Test valid service", () => {
   const result = servicesSchema.safeParse('diagnostics');
 
-if (result.success) {
-  const service: Service = result.data;
-}
+  assert.ok(result.success); 
+  const service: Service = result.data; 
 });
 
 
