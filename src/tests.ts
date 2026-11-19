@@ -5,6 +5,7 @@ import type { Service } from './domain/services.js';
 import { customerSchema } from './domain/customer-validation.js';
 import { requestSchema } from './domain/request-validation.js';
 import { openDatabase } from './db/sqlite.js';
+import { initializeSchema } from './db/schema.js';
 
 
 test('Test invalid service', () => {
@@ -160,6 +161,25 @@ test("Opens database connection and SELECT 1 AS answer", () => {
   try {
     const row = db.prepare('SELECT 1 AS answer').get();
     assert.deepEqual(row, { answer: 1 });
+  } finally {
+    db.close();
+  }
+});
+
+test("Opens database connection and creates requests table with idempotency_key check", () => {
+  const db = openDatabase(':memory:');
+  try {
+    initializeSchema(db);
+    const insert = db.prepare('INSERT INTO requests (idempotency_key, request_id, payload_hash, service, preferred_at) VALUES (?, ?, ?, ?, ?)');
+    const values = ['1a1502ac-e045-4e8a-b900-4686b050a1cb', 'req-123', 'hash-abc', 'diagnostics', '2026-12-01T14:00:00+02:00'];
+    insert.run(values);
+    try {
+      insert.run(values);
+    } catch (err) {
+      assert.ok(err instanceof Error);
+      assert.ok(err.message.includes('UNIQUE constraint failed: requests.idempotency_key'));
+    }
+    
   } finally {
     db.close();
   }
