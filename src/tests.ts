@@ -3,6 +3,7 @@ import {test} from 'node:test';
 import assert from "node:assert/strict";
 import type { Service } from './domain/services.js';
 import { customerSchema } from './domain/customer-validation.js';
+import { requestSchema } from './domain/request-validation.js';
 
 
 test('Test invalid service', () => {
@@ -66,5 +67,36 @@ test("Test Customer Schema with empty phone", () => {
   };  
   assert.throws(() => {
     customerSchema.parse(invalidCustomer);
+  });
+});
+
+
+test("Test requestSchema with valid data", () => {
+  const validRequest = {
+    test: true,
+    service: "diagnostics",
+    customer: {
+      name: "John Doe",
+      email: "test@email.com",
+      phone: "123-456-7890"
+    }
+  };
+  assert.doesNotThrow(() => {
+    requestSchema.parse(validRequest);
+  });
+});
+
+test("Test requestSchema with invalid test value", () => {
+  const invalidRequest = {
+    test: false,
+    service: "diagnostics",
+    customer: {
+      name: "John Doe",
+      email: "test@email.com",
+      phone: "123-456-7890"
+    }
+  };
+  assert.throws(() => {
+    requestSchema.parse(invalidRequest);
   });
 });
