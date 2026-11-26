@@ -77,3 +77,12 @@ test-reports
 node_modules/
 deploy.ps1
 .vscode/
+
+# Local runtime data and secrets
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+.env
+.env.*
+!.env.example

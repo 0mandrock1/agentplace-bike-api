@@ -1,22 +1,16 @@
-import Fastify from "fastify"
-import { SERVICES } from "./domain/services.js"
+import { openDatabase } from "./db/sqlite.js"
+import { initializeSchema } from "./db/schema.js"
+import { buildApp } from "./app.js"
 
-const fastify = Fastify({
-    logger:true
-})
+const db = openDatabase("agentplace.db")
+initializeSchema(db)
+const enableFaultInjection =
+    process.env.ENABLE_FAULT_INJECTION === 'true';
+const app = buildApp(db,{enableFaultInjection})
 
-fastify.get('/health', function(request, reply) {
-    reply.send({"status":"ok"})
-}) 
-
-
-fastify.get(('/v1/services'),function(request,reply) {
-    reply.send(SERVICES)
-})
-
-fastify.listen({ port: 3000}, function(err,address){
+app.listen({ port: 3000}, function(err,address){
     if (err) {
-        fastify.log.error(err)
+        app.log.error(err)
         process.exit(1)
     }
 })
