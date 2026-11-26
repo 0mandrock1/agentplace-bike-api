@@ -2,6 +2,8 @@
 
 SpokeWorks is a bicycle-service demo agent built in Agentplace with Luna. It helps a customer choose one of five services, enter synthetic contact details and a preferred time, review the request, and explicitly submit it. The external TypeScript API registers test requests; it does not book appointments or contact real customers.
 
+**Live demo:** https://frkr1utnuxoa.run.agentplace.io
+
 ## Architecture
 
 ```mermaid
@@ -116,6 +118,7 @@ Observed in Agentplace Preview on 2026-11-26. Backend journal and SQLite were ch
 | Incomplete data | PASS: inline form errors, no final API call or row | Final row count remained 4 |
 | Unavailable service | PASS: controlled sandbox 503, no registration | Sandbox attempt 76, not_processed |
 | Recovery (extra) | PASS: explicit retry 201, same key as outage | req-d, one final row, zero sandbox rows for key |
+| Normal Diagnostics after router change | PASS: 201, new UUID, matching receipt | req-e, one row; sandbox unchanged |
 
 ### Evidence from the observed run
 
@@ -124,8 +127,9 @@ Observed in Agentplace Preview on 2026-11-26. Backend journal and SQLite were ch
 | req-a (201) | 5797f43d-8563-4df0-a255-0283ba8ad277 | 64a391fb-a0f2-4195-abf3-58c045b29211 |
 | req-b (201), req-c (200) | a1b8073d-4d79-4cfa-8abb-738202e9e9e2 | 22a3439c-73ef-4bad-b76e-616dfbe9ef10 |
 | sandbox attempt 76 (503), req-d (201) | f940547c-0fdc-4145-816a-37c8cc1280bf | f438f43f-30d0-40b5-be47-6ea5ee41076f |
+| req-e (201) | 7e875f7d-bc95-4e86-97ef-f4c613a8e80e | a1c2c35f-6ed6-40ed-9bf6-c1e0862e497d |
 
-The hosted database contained five records after recovery (two earlier API smoke requests and three distinct agent requests). The sandbox contained 20 pre-existing records; the outage did not add one. These are recorded observations, not results of the local reproduction script. The source code and runnable tests are provided for independent verification.
+The hosted database contained five records after recovery (two earlier API smoke requests and three distinct agent requests), then six after the final Diagnostics regression at 10:45:55 UTC. The new receipt matches the preferred time 2026-11-26T15:43:00+02:00 and exactly one final database row. The sandbox contained 20 pre-existing records; the outage did not add one. These are recorded observations, not results of the local reproduction script. The source code and runnable tests are provided for independent verification.
 
 ## Agent review procedure
 
@@ -137,7 +141,7 @@ The hosted database contained five records after recovery (two earlier API smoke
 ## Limitations and operational boundaries
 
 - Demo only: no calendar availability, real appointment booking, CRM delivery, customer messaging or real personal data.
-- The public agent and final direct-card Diagnostics regression after the router change are not yet verified at the time of this evidence snapshot.
+- The published agent URL returned HTTP 200 without authentication. The final normal Diagnostics submission was verified against the backend journal and SQLite; direct card-to-form navigation and an independent interactive run of the published version were not separately observed.
 - The 503 drill is a controlled HTTP response from a separate sandbox, not a live network outage. Actual TCP timeouts and key retention across new conversations have not been demonstrated.
 - Full payload identity across the sandbox failure and recovery was not independently verified (the rejected sandbox attempt stores no fingerprint). The same key and visible service/time were confirmed.
 - Make execution history was not independently inspected; routing evidence comes from observed downstream responses and the recorded configuration. The incomplete-form result establishes no final API call, not absence of all Make activity.
